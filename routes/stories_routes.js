@@ -38,14 +38,13 @@ module.exports = function(app) {
 
   //get all stories within certain radius of given lat/lng
   app.get('/api/stories/location', function(req, res) {
-    return Story.find({})
-      .where('lat').gt(req.headers.latmin).lt(req.headers.latmax)
-      .where('lng').gt(req.headers.lngmin).lt(req.headers.lngmax)
-      .exec(function(err, data) {
-      if (err) return res.status(500).send('database error');
-      return res.json(data);
-    });
-
+    Story.find({
+      lat: {$gt: req.headers.latmin, $lt: req.headers.latmax},
+      lng: {$gt: req.headers.lngmin, $lt: req.headers.lngmax}},
+      function(err, data) {
+        if (err) return res.status(500).send('database error');
+        return res.json(data);
+      });
   });
 
 };

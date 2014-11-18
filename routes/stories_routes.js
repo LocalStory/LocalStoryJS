@@ -12,8 +12,8 @@ module.exports = function(app) {
     newStory.title = req.body.title;
     newStory.storyBody = req.body.storyBody;
     newStory.date = new Date();
-    newStory.location.type = 'Point';
-    newStory.location.coordinates = [req.body.lat, req.body.lng];
+    newStory.lat = req.body.lat;
+    newStory.lng = req.body.lng;
     newStory.save(function(err, data) {
       if (err) return res.status(500).send('there was an error');
       return res.json(data);
@@ -37,5 +37,15 @@ module.exports = function(app) {
   });
 
   //get all stories within certain radius of given lat/lng
+  app.get('/api/stories/location', function(req, res) {
+    return Story.find({})
+      .where('lat').gt(req.headers.latmin).lt(req.headers.latmax)
+      .where('lng').gt(req.headers.lngmin).lt(req.headers.lngmax)
+      .exec(function(err, data) {
+      if (err) return res.status(500).send('database error');
+      return res.json(data);
+    });
+
+  });
 
 };

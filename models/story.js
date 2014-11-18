@@ -7,12 +7,8 @@ var storySchema = mongoose.Schema({
   title: String,
   storyBody: String,
   date: Date,
-  location: {
-    type: {
-      type: String
-    },
-    coordinates: [Number]
-  }
+  lat: Number,
+  lng: Number
 });
 
 module.exports = mongoose.model('Story', storySchema);

@@ -12,13 +12,9 @@ var app = require('../../server');
 chai.use(chaiHttp);
 
 describe('users', function() {
-
   it('should clear the database users collection', function(done) {
     mongoose.connection.collections.users.drop(function(err) {
-      if (err) {
-        console.log(err);
-        return;
-      }
+      if (err) { console.log(err); }
       done();
     });
   });

@@ -10,14 +10,19 @@ chai.use(chaiHttp);
 
 require('../../server');
 
-mongoose.connection.collections['users'].drop(function(err) {
-  if (err) {
-    console.log(err);
-    return;
-  }
-});
+
 
 describe('stories', function() {
+  before(function(done) {
+    mongoose.connection.collections.users.drop(function(err) {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      done();
+    });
+  });
+
   var tempJWT;
   var tempStoryId;
 

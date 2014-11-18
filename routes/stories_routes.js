@@ -1,4 +1,4 @@
-'user strict';
+'use strict';
 
 var Story = require('../models/story');
 
@@ -12,7 +12,7 @@ module.exports = function(app) {
     newStory.title = req.body.title;
     newStory.storyBody = req.body.storyBody;
     newStory.date = new Date();
-    newStory.location['type'] = 'Point';
+    newStory.location.type = 'Point';
     newStory.location.coordinates = [req.body.lat, req.body.lng];
     newStory.save(function(err, data) {
       if (err) return res.status(500).send('there was an error');
@@ -37,11 +37,5 @@ module.exports = function(app) {
   });
 
   //get all stories within certain radius of given lat/lng
-  app.get('/api/stories/location/:lat/:lng', function(req, res) {
-    Story.geoNear([req.params.lat, req.params.lng], function(err, data) {
-      //data -> all stories near req.params.lat + req.params.lng
-    })
-  });
-
 
 };

@@ -11,14 +11,17 @@ var app = require('../../server');
 
 chai.use(chaiHttp);
 
-mongoose.connection.collections['users'].drop(function(err) {
-  if (err) {
-    console.log(err);
-    return;
-  }
-});
-
 describe('users', function() {
+
+  before(function() {
+    mongoose.connection.collections.users.drop(function(err) {
+      if (err) {
+        console.log(err);
+        return;
+      }
+    });
+  });
+
   var jwt;
 
   it('should create a new user', function(done) {
@@ -27,6 +30,7 @@ describe('users', function() {
     .send({"email": "test@example.com", "password": "asdf", "passwordConfirm": "asdf"})
     .end(function(err, res) {
       expect(err).to.be.null;
+      expect(res).to.not.have.status(500);
       expect(res.body).to.have.property('jwt').that.is.a('string');
       done();
     });

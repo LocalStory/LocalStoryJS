@@ -8,12 +8,11 @@ var storySchema = mongoose.Schema({
   storyBody: String,
   date: Date,
   location: {
-    'type': {
+    type: {
       type: String
     },
     coordinates: [Number]
   }
 });
-
 
 module.exports = mongoose.model('Story', storySchema);

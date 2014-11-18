@@ -13,12 +13,13 @@ chai.use(chaiHttp);
 
 describe('users', function() {
 
-  before(function() {
+  it('should clear the database users collection', function(done) {
     mongoose.connection.collections.users.drop(function(err) {
       if (err) {
         console.log(err);
         return;
       }
+      done();
     });
   });
 

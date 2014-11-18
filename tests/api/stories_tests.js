@@ -10,10 +10,8 @@ chai.use(chaiHttp);
 
 require('../../server');
 
-
-
 describe('stories', function() {
-  before(function(done) {
+  it('should clear the database users collection', function(done) {
     mongoose.connection.collections.users.drop(function(err) {
       if (err) {
         console.log(err);

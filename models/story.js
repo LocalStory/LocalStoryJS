@@ -8,12 +8,8 @@ var storySchema = mongoose.Schema({
   storyBody: String,
   date: Date,
   img: {type: mongoose.Schema.Types.ObjectId, ref: 'fs.file'},
-  location: {
-    type: {
-      type: String
-    },
-    coordinates: [Number]
-  }
+  lat: Number,
+  lng: Number
 });
 
 module.exports = mongoose.model('Story', storySchema);

@@ -19,6 +19,13 @@ describe('stories', function() {
     });
   });
 
+  it('should clear the database stories collection', function(done) {
+    mongoose.connection.collections.stories.drop(function(err) {
+      if (err) { console.log(err); }
+      done();
+    });
+  });
+
   var tempJWT;
   var tempStoryId;
 
@@ -41,13 +48,13 @@ describe('stories', function() {
     .send({
       "title": "my cool title",
       "storyBody": "the body of the story",
-      "lat": "24.54654",
-      "lng": "54.4645"
+      "lat": "0.0",
+      "lng": "51.0"
     })
     .end(function(err, res) {
       expect(err).to.be.null;
       expect(res).to.not.have.status(500);
-      expect(res.body).to.include.keys('title', 'storyBody', 'location', 'date', 'userId');
+      expect(res.body).to.include.keys('title', 'storyBody', 'lat', 'lng', 'date', 'userId');
       tempStoryId = res.body._id;
       done();
     });
@@ -58,7 +65,7 @@ describe('stories', function() {
     .get('/api/stories/single/' + tempStoryId)
     .end(function(err, res) {
       expect(err).to.be.null;
-      expect(res.body).to.include.keys('title', 'storyBody', 'location', 'date', 'userId');
+      expect(res.body).to.include.keys('title', 'storyBody', 'lat', 'lng', 'date', 'userId');
       done();
     });
   });
@@ -83,6 +90,40 @@ describe('stories', function() {
     .send({"image": imageBuffer, "imageName": "imagename"})
     .end(function(err, res) {
       expect(err).to.be.null;
+      done();
+    });
+
+  //this is for the get('/api/stories/location') route;
+  //it shows that it excludes stories outside its range
+  it('should add another story', function(done) {
+    chai.request(url)
+    .post('/api/stories')
+    .set('jwt', tempJWT)
+    .send({
+      "title": "out of range story",
+      "storyBody": "this story isn't in range",
+      "lat": "100.0",
+      "lng": "100.0"
+    })
+    .end(function(err, res) {
+      expect(err).to.be.null;
+      expect(res.body).to.include.keys('title', 'storyBody', 'lat', 'lng', 'date', 'userId');
+      tempStoryId = res.body._id;
+      done();
+    });
+  });
+
+  it('should get stories inside a range of coordinates', function(done) {
+    chai.request(url)
+    .get('/api/stories/location')
+    .set('latMin', -1)
+    .set('latMax', 1)
+    .set('lngMin', 50)
+    .set('lngMax', 52)
+    .end(function(err, res) {
+      expect(err).to.be.null;
+      expect(res.body).to.be.an('array');
+      expect(res.body).to.have.length(1);
       done();
     });
   });

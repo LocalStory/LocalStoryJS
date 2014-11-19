@@ -74,7 +74,12 @@ describe('stories', function() {
       expect(err).to.be.null;
       expect(res).to.not.have.status(500);
       expect(res).to.have.header('transfer-encoding', 'chunked');
-      //res.pipe(process.stdout);
+      /*fs.writeFileSync(__dirname + '/testImage.jpeg');
+      var writeStream = fs.createWriteStream()
+      fs.exists(__dirname + '/testImage.jpeg', function(exists) {
+        expect(exists).to.be.true;
+      });
+      fs.*/
       done();
     });
   });

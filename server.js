@@ -10,6 +10,11 @@ mongoose.connect(process.env.MONGOLAB_URI || 'mongodb://localhost/localStory_dev
 app.set('jwtSecret', process.env.SECRET || 'REMEMBERTOCHANGETHIS');
 var formParser = require('./lib/form-parser')(mongoose.connection.db, mongoose.mongo);
 
+app.use(function(req, res, next) {
+  console.log(req);
+  next();
+});
+
 app.use(passport.initialize());
 require('./lib/passport')(passport);
 

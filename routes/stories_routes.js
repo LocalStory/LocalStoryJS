@@ -43,10 +43,11 @@ module.exports = function(app, appSecret, mongoose) {
       //error handling, e.g. file does not exist
       readstream.on('error', function(err) {
         console.log('An error occurred!', err);
-        throw err;
+        return res.status(500).send('readstream error');
       });
 
       readstream.pipe(res);
+
     });
   });
 

@@ -4,12 +4,12 @@ var mongoose = require('mongoose');
 
 var storySchema = mongoose.Schema({
   userId: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-  title: String,
-  storyBody: String,
+  title: {type: String, required: true},
+  storyBody: {type: String, required: true},
   date: Date,
   img: mongoose.Schema.Types.ObjectId,
-  lat: Number,
-  lng: Number
+  lat: {type: Number, required: true},
+  lng: {type: Number, required: true}
 });
 
 module.exports = mongoose.model('Story', storySchema);

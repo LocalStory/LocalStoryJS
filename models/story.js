@@ -7,7 +7,7 @@ var storySchema = mongoose.Schema({
   title: String,
   storyBody: String,
   date: Date,
-  img: {type: mongoose.Schema.Types.ObjectId, ref: 'fs.file'},
+  img: mongoose.Schema.Types.ObjectId,
   lat: Number,
   lng: Number
 });

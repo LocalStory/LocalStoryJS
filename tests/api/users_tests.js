@@ -12,10 +12,9 @@ var app = require('../../server');
 chai.use(chaiHttp);
 
 describe('users', function() {
-  it('should clear the database users collection', function(done) {
+  before(function() {
     mongoose.connection.collections.users.drop(function(err) {
       if (err) { console.log(err); }
-      done();
     });
   });
 
@@ -24,7 +23,9 @@ describe('users', function() {
   it('should create a new user', function(done) {
     chai.request(url)
     .post('/api/users')
-    .send({"email": "test@example.com", "password": "asdf", "passwordConfirm": "asdf"})
+    .field('email', 'test@example.com')
+    .field('password', 'asdf')
+    .field('passwordConfirm', 'asdf')
     .end(function(err, res) {
       expect(err).to.be.null;
       expect(res).to.not.have.status(500);

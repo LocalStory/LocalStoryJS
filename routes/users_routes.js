@@ -2,10 +2,9 @@
 
 var User = require('../models/user');
 
-module.exports = function(app, passport) {
+module.exports = function(app, appSecret, passport) {
   //add user
   app.post('/api/users', function(req, res) {
-
     User.findOne({'basic.email': req.body.email}, function(err, user) {
       if (err) return res.status(500).send('server error');
       if (user) return res.status(500).send('cannot create that user');
@@ -16,14 +15,14 @@ module.exports = function(app, passport) {
       newUser.basic.password = newUser.generateHash(req.body.password);
       newUser.save(function(err) {
         if (err) return res.status(500).send('server error');
-        res.json({jwt: newUser.generateToken(app.get('jwtSecret'))});
+        res.json({jwt: newUser.generateToken(appSecret)});
       });
     });
   });
 
   //sign user in
-  app.get('/api/users/', passport.authenticate('basic', {session: false}), function(req, res) {
-    return res.json({jwt: req.user.generateToken(app.get('jwtSecret'))});
+  app.get('/api/users', passport.authenticate('basic', {session: false}), function(req, res) {
+    return res.json({jwt: req.user.generateToken(appSecret)});
   });
 
 };

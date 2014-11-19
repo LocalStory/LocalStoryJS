@@ -6,7 +6,7 @@ var mongoose = require('mongoose');
 var express = require('express');
 var app = express();
 
-mongoose.connect(process.env.MONGOOSE || 'mongodb://localhost/localStory_dev');
+mongoose.connect(process.env.MONGOLAB_URI || 'mongodb://localhost/localStory_dev');
 app.set('jwtSecret', process.env.SECRET || 'REMEMBERTOCHANGETHIS');
 var formParser = require('./lib/form-parser')(mongoose.connection.db, mongoose.mongo);
 
@@ -14,7 +14,6 @@ app.use(passport.initialize());
 require('./lib/passport')(passport);
 
 app.use(bodyParser.urlencoded({extended: false}));
-//app.use(bodyParser.json());
 app.use(formParser);
 
 require('./routes/users_routes')(app, app.get('jwtSecret'), passport);

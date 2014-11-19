@@ -1,10 +1,9 @@
 'use strict';
 
-var grid = require('gridfs-stream');
 var Story = require('../models/story');
 
-module.exports = function(app, appSecret, mongoose) {
-  var jwtAuth = require('../lib/jwt-auth')(appSecret);
+module.exports = function(app) {
+  var jwtAuth = require('../lib/jwt-auth')(app.get('jwtSecret'));
 
   //add a story
   app.post('/api/stories', jwtAuth, function(req, res) {
@@ -15,7 +14,6 @@ module.exports = function(app, appSecret, mongoose) {
     newStory.date = new Date();
     newStory.lat = req.body.lat;
     newStory.lng = req.body.lng;
-    if (req.body.image) newStory.img = req.body.image;
     newStory.save(function(err, data) {
       if (err) return res.status(500).send('there was an error');
       return res.json(data);
@@ -24,37 +22,17 @@ module.exports = function(app, appSecret, mongoose) {
 
   //get a story
   app.get('/api/stories/single/:storyId', function(req, res) {
-    Story.findById(req.params.storyId, function(err, story) {
+    Story.findById(req.params.storyId, function(err, data) {
       if (err) return res.status(500).send('story not found');
-      return res.json(story);
-    });
-  });
-
-  //get a story's image
-  app.get('/api/stories/single/image/:storyId', function(req, res) {
-    Story.findById(req.params.storyId, function(err, story) {
-      if (err) res.status(500).send('story does not have an image');
-      var gfs = grid(mongoose.connection.db, mongoose.mongo);
-      // streaming from gridfs
-      var readstream = gfs.createReadStream({
-        _id: story.img
-      });
-
-      //error handling, e.g. file does not exist
-      readstream.on('error', function(err) {
-        console.log('An error occurred!', err);
-        throw err;
-      });
-
-      readstream.pipe(res);
+      return res.json(data);
     });
   });
 
   //get a particular user's story
   app.get('/api/stories/user', jwtAuth, function(req, res) {
-    Story.find({userId: req.user._id}, function(err, stories) {
+    Story.find({userId: req.user._id}, function(err, data) {
       if (err) return res.status(500).send('user has no stories');
-      return res.json(stories);
+      return res.json(data);
     });
   });
 

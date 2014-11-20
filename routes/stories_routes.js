@@ -61,12 +61,23 @@ module.exports = function(app, appSecret, mongoose) {
 
   //get all stories within certain radius of given lat/lng
   app.get('/api/stories/location', function(req, res) {
-    Story.find({
+    //query number 1 - checks for count < 200
+    Story.count({
       lat: {$gt: req.headers.latmin, $lt: req.headers.latmax},
-      lng: {$gt: req.headers.lngmin, $lt: req.headers.lngmax}},
-      function(err, data) {
-        if (err) return res.status(500).send('database error');
-        return res.json(data);
-      });
+      lng: {$gt: req.headers.lngmin, $lt: req.headers.lngmax}
+    }, function(err, count) {
+      if (count < 200) {
+        //if fewer than 200, return stories
+        return Story.find({
+          lat: {$gt: req.headers.latmin, $lt: req.headers.latmax},
+          lng: {$gt: req.headers.lngmin, $lt: req.headers.lngmax}},
+          function(err, data) {
+            if (err) return res.status(500).send('database error');
+            return res.json(data);
+          });
+      }
+      //otherwise, return count
+      return res.json({count: count});
+    });
   });
 };

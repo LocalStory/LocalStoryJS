@@ -134,9 +134,37 @@ describe('stories', function() {
       expect(err).to.be.null;
       expect(res.body).to.be.an('array')
         .to.have.deep.property('[0].title', 'my cool title');
-     // expect(res.body[0].title).to.not.eql('out of range story');
-      //expect(res.body[0].title).to.eql('my cool title');
       done();
     });
   });
+
+  before(function() {
+    for (var i = 0; i < 201; i++) {
+      mongoose.connection.collections.stories.insert({
+        userId: '546d3092ad2269026e83de6c',
+        title: i,
+        storyBody: 'a story',
+        lat: 47,
+        lng: -122
+      }, function(err) {
+        if (err) return err;
+      });
+    }
+  });
+
+  it('should return a count instead', function(done) {
+    chai.request(url)
+    .get('/api/stories/location')
+    .set('latMin', 46)
+    .set('latMax', 48)
+    .set('lngMin', -123)
+    .set('lngMax', -121)
+    .end(function(err, res) {
+      expect(err).to.be.null;
+      expect(res.body).to.have.property('count')
+        .that.eql(201);
+      done();
+    });
+  });
+
 });

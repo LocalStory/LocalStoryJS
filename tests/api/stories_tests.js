@@ -74,13 +74,22 @@ describe('stories', function() {
       expect(err).to.be.null;
       expect(res).to.not.have.status(500);
       expect(res).to.have.header('transfer-encoding', 'chunked');
-      /*fs.writeFileSync(__dirname + '/testImage.jpeg');
-      var writeStream = fs.createWriteStream()
-      fs.exists(__dirname + '/testImage.jpeg', function(exists) {
-        expect(exists).to.be.true;
+      //create file
+      fs.writeFileSync(__dirname + '/testImage.jpeg');
+      //make write stream out of file
+      var writeStream = fs.createWriteStream(__dirname + '/testImage.jpeg');
+      //pipe res into write stream
+      res.on('data', function(data) {
+        writeStream.write(data);
       });
-      fs.*/
-      done();
+      //check that file exists
+      res.on('end', function() {
+        fs.exists(__dirname + '/testImage.jpeg', function(exists) {
+          expect(exists).to.be.true;
+          fs.unlinkSync(__dirname + '/testImage.jpeg');
+          done();
+        });
+      });
     });
   });
 

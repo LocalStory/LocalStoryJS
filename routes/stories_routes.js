@@ -69,5 +69,4 @@ module.exports = function(app, appSecret, mongoose) {
         return res.json(data);
       });
   });
-
 };

@@ -8,10 +8,7 @@ var userSchema = mongoose.Schema({
   basic: {
     email: {type: String, required: true},
     password: {type: String, required: true}
-  },
-  twitter: {},
-  google: {},
-  facebook: {}
+  }
 });
 
 userSchema.methods.validatePassword = function(password) {

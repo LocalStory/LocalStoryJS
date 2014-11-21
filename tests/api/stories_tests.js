@@ -45,8 +45,8 @@ describe('stories', function() {
     .attach('file', __dirname + '/DSCN0119.JPG')
     .field('title', 'my cool title')
     .field('storyBody', 'the body of the story')
-    .field('lat', '0.0')
-    .field('lng', '51.0')
+    .field('lat', '47.34234')
+    .field('lng', '-127.34234')
     .end(function(err, res) {
       expect(err).to.be.null;
       expect(res).to.not.have.status(500);
@@ -73,7 +73,7 @@ describe('stories', function() {
     .set('jwt', tempJWT)
     .attach('file', __dirname + '/DSCN0196.JPG')
     .field('storyBody', 'the new body of the story')
-    .field('lat', '1.0')
+    .field('lat', '47.45768')
     .end(function(err, res) {
       expect(err).to.be.null;
       expect(res).to.not.have.status(500);
@@ -129,8 +129,8 @@ describe('stories', function() {
     .set('jwt', tempJWT)
     .field('title', 'out of range story')
     .field('storyBody', 'this story is not in range')
-    .field('lat', '100.0')
-    .field('lng', '100.0')
+    .field('lat', '49.34234')
+    .field('lng', '-130.34234')
     .end(function(err, res) {
       expect(err).to.be.null;
       expect(res.body).to.include.keys('title', 'storyBody', 'lat', 'lng', 'date', 'userId');
@@ -142,10 +142,10 @@ describe('stories', function() {
   it('should get stories inside a range of coordinates', function(done) {
     chai.request(url)
     .get('/api/stories/location')
-    .set('latMin', -2)
-    .set('latMax', 2)
-    .set('lngMin', 50)
-    .set('lngMax', 52)
+    .set('latMin', 46.34234)
+    .set('latMax', 48.34234)
+    .set('lngMin', -127.91233)
+    .set('lngMax', -127.24234)
     .end(function(err, res) {
       expect(err).to.be.null;
       expect(res.body).to.be.an('array')
@@ -160,8 +160,8 @@ describe('stories', function() {
         userId: '546d3092ad2269026e83de6c',
         title: i,
         storyBody: 'a story',
-        lat: 47,
-        lng: -122
+        lat: 47.0005,
+        lng: -122.05
       }, function(err) {
         if (err) return err;
       });
@@ -171,10 +171,10 @@ describe('stories', function() {
   it('should return a count instead of an array of stories', function(done) {
     chai.request(url)
     .get('/api/stories/location')
-    .set('latMin', 46)
-    .set('latMax', 48)
-    .set('lngMin', -123)
-    .set('lngMax', -121)
+    .set('latMin', 47.0004)
+    .set('latMax', 47.0006)
+    .set('lngMin', -122.06)
+    .set('lngMax', -122.04)
     .end(function(err, res) {
       expect(err).to.be.null;
       expect(res.body).to.have.property('storyCount')

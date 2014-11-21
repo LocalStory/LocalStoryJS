@@ -52,7 +52,8 @@ module.exports = function(app, appSecret, mongoose) {
   //get a story's image
   app.get('/api/stories/single/image/:storyId', function(req, res) {
     Story.findById(req.params.storyId, function(err, story) {
-      if (err) res.status(500).send('story does not have an image');
+      if (err) return res.status(500).send('server error');
+      if (!story) return res.status(500).send('story does not exist');
       var gfs = grid(mongoose.connection.db, mongoose.mongo);
       // streaming from gridfs
       var readstream = gfs.createReadStream({
@@ -72,7 +73,7 @@ module.exports = function(app, appSecret, mongoose) {
   //get a particular user's story
   app.get('/api/stories/user', jwtAuth, function(req, res) {
     Story.find({userId: req.user._id}, function(err, stories) {
-      if (err) return res.status(500).send('user has no stories');
+      if (err) return res.status(500).send('server error');
       return res.json(stories);
     });
   });

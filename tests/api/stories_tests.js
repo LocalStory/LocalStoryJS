@@ -83,21 +83,6 @@ describe('stories', function() {
     });
   });
 
-  it.skip('should not update a story that does not belong to that user', function(done) {
-    chai.request(url)
-    .put('/api/stories/single/' + tempStoryId)
-    .set('jwt', tempJWT)
-    .field('storyBody', 'the new body of the story')
-    .field('lat', '1.0')
-    .end(function(err, res) {
-      expect(err).to.be.null;
-      expect(res).to.not.have.status(500);
-      expect(res).to.not.have.status(403);
-      expect(res.body).to.have.deep.property('ok', true);
-      done();
-    });
-  });
-
   it('should return a story\'s image given a story id', function(done) {
     chai.request(url)
     .get('/api/stories/single/image/' + tempStoryId)

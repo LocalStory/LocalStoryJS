@@ -67,6 +67,37 @@ describe('stories', function() {
     });
   });
 
+  it('should update a story', function(done) {
+    chai.request(url)
+    .put('/api/stories/single/' + tempStoryId)
+    .set('jwt', tempJWT)
+    .attach('file', __dirname + '/DSCN0196.JPG')
+    .field('storyBody', 'the new body of the story')
+    .field('lat', '1.0')
+    .end(function(err, res) {
+      expect(err).to.be.null;
+      expect(res).to.not.have.status(500);
+      expect(res).to.not.have.status(403);
+      expect(res.body).to.have.deep.property('ok', true);
+      done();
+    });
+  });
+
+  it.skip('should not update a story that does not belong to that user', function(done) {
+    chai.request(url)
+    .put('/api/stories/single/' + tempStoryId)
+    .set('jwt', tempJWT)
+    .field('storyBody', 'the new body of the story')
+    .field('lat', '1.0')
+    .end(function(err, res) {
+      expect(err).to.be.null;
+      expect(res).to.not.have.status(500);
+      expect(res).to.not.have.status(403);
+      expect(res.body).to.have.deep.property('ok', true);
+      done();
+    });
+  });
+
   it('should return a story\'s image given a story id', function(done) {
     chai.request(url)
     .get('/api/stories/single/image/' + tempStoryId)
@@ -82,7 +113,7 @@ describe('stories', function() {
       res.on('data', function(data) {
         writeStream.write(data);
       });
-      //check that file exists
+      //check if that file exists
       res.on('end', function() {
         fs.exists(__dirname + '/testImage.jpeg', function(exists) {
           expect(exists).to.be.true;
@@ -126,8 +157,8 @@ describe('stories', function() {
   it('should get stories inside a range of coordinates', function(done) {
     chai.request(url)
     .get('/api/stories/location')
-    .set('latMin', -1)
-    .set('latMax', 1)
+    .set('latMin', -2)
+    .set('latMax', 2)
     .set('lngMin', 50)
     .set('lngMax', 52)
     .end(function(err, res) {
@@ -152,7 +183,7 @@ describe('stories', function() {
     }
   });
 
-  it('should return a count instead', function(done) {
+  it('should return a count instead of an array of stories', function(done) {
     chai.request(url)
     .get('/api/stories/location')
     .set('latMin', 46)
@@ -161,7 +192,7 @@ describe('stories', function() {
     .set('lngMax', -121)
     .end(function(err, res) {
       expect(err).to.be.null;
-      expect(res.body).to.have.property('count')
+      expect(res.body).to.have.property('storyCount')
         .that.eql(201);
       done();
     });

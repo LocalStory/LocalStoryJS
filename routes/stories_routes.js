@@ -2,12 +2,16 @@
 
 var grid = require('gridfs-stream');
 var Story = require('../models/story');
+var updateObject = require('../lib/update-obj');
 
 module.exports = function(app, appSecret, mongoose) {
   var jwtAuth = require('../lib/jwt-auth')(appSecret);
+  var permissions = require('../lib/permissions');
+  var formParser = require('../lib/form-parser')(mongoose.connection.db, mongoose.mongo);
+  var removeImage = require('../lib/remove-image')(mongoose.connection.db, mongoose.mongo);
 
   //add a story
-  app.post('/api/stories', jwtAuth, function(req, res) {
+  app.post('/api/stories', jwtAuth, formParser, function(req, res) {
     var newStory = new Story();
     newStory.userId = req.user._id;
     newStory.title = req.body.title;
@@ -30,6 +34,21 @@ module.exports = function(app, appSecret, mongoose) {
     });
   });
 
+  //update a particular story
+  app.put('/api/stories/single/:storyId',
+    jwtAuth,
+    permissions,
+    formParser,
+    updateObject,
+    removeImage,
+  function(req, res) {
+    //update the story document
+    req.story.update(req.updateObj, function(err, numAffected, raw) {
+      if (err) return res.status(500).send('update not successful');
+      return res.json(raw);
+    });
+  });
+
   //get a story's image
   app.get('/api/stories/single/image/:storyId', function(req, res) {
     Story.findById(req.params.storyId, function(err, story) {
@@ -42,12 +61,11 @@ module.exports = function(app, appSecret, mongoose) {
 
       //error handling, e.g. file does not exist
       readstream.on('error', function(err) {
-        console.log('An error occurred!', err);
+        console.log('An error occurred streaming the image!\n', err);
         return res.status(500).send('readstream error');
       });
 
       readstream.pipe(res);
-
     });
   });
 
@@ -77,7 +95,7 @@ module.exports = function(app, appSecret, mongoose) {
           });
       }
       //otherwise, return count
-      return res.json({count: count});
+      return res.json({storyCount: count});
     });
   });
 };

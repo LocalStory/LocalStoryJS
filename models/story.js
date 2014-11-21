@@ -3,7 +3,7 @@
 var mongoose = require('mongoose');
 
 var storySchema = mongoose.Schema({
-  userId: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+  userId: mongoose.Schema.Types.ObjectId,
   title: {type: String, required: true},
   storyBody: {type: String, required: true},
   date: Date,

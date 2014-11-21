@@ -8,15 +8,13 @@ var app = express();
 
 mongoose.connect(process.env.MONGOLAB_URI || 'mongodb://localhost/localStory_dev');
 app.set('jwtSecret', process.env.SECRET || 'REMEMBERTOCHANGETHIS');
-var formParser = require('./lib/form-parser')(mongoose.connection.db, mongoose.mongo);
 
 app.use(passport.initialize());
 require('./lib/passport')(passport);
 
 app.use(bodyParser.urlencoded({extended: false}));
-app.use(formParser);
 
-require('./routes/users_routes')(app, app.get('jwtSecret'), passport);
+require('./routes/users_routes')(app, app.get('jwtSecret'), passport, mongoose);
 require('./routes/stories_routes')(app, app.get('jwtSecret'), mongoose);
 
 app.set('port', process.env.PORT || 3000);

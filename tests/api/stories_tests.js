@@ -78,7 +78,7 @@ describe('stories', function() {
       expect(err).to.be.null;
       expect(res).to.not.have.status(500);
       expect(res).to.not.have.status(403);
-      expect(res.body).to.have.deep.property('ok', true);
+      expect(res.body).to.have.deep.property('ok').to.not.eql(false);
       done();
     });
   });

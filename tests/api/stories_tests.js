@@ -67,6 +67,22 @@ describe('stories', function() {
     });
   });
 
+  it('should update a story', function(done) {
+    chai.request(url)
+    .put('/api/stories/single/' + tempStoryId)
+    .set('jwt', tempJWT)
+    .attach('file', __dirname + '/DSCN0196.JPG')
+    .field('storyBody', 'the new body of the story')
+    .field('lat', '1.0')
+    .end(function(err, res) {
+      expect(err).to.be.null;
+      expect(res).to.not.have.status(500);
+      expect(res).to.not.have.status(403);
+      expect(res.body).to.have.deep.property('ok').to.not.eql(false);
+      done();
+    });
+  });
+
   it('should return a story\'s image given a story id', function(done) {
     chai.request(url)
     .get('/api/stories/single/image/' + tempStoryId)
@@ -82,7 +98,7 @@ describe('stories', function() {
       res.on('data', function(data) {
         writeStream.write(data);
       });
-      //check that file exists
+      //check if that file exists
       res.on('end', function() {
         fs.exists(__dirname + '/testImage.jpeg', function(exists) {
           expect(exists).to.be.true;
@@ -126,17 +142,45 @@ describe('stories', function() {
   it('should get stories inside a range of coordinates', function(done) {
     chai.request(url)
     .get('/api/stories/location')
-    .set('latMin', -1)
-    .set('latMax', 1)
+    .set('latMin', -2)
+    .set('latMax', 2)
     .set('lngMin', 50)
     .set('lngMax', 52)
     .end(function(err, res) {
       expect(err).to.be.null;
       expect(res.body).to.be.an('array')
         .to.have.deep.property('[0].title', 'my cool title');
-     // expect(res.body[0].title).to.not.eql('out of range story');
-      //expect(res.body[0].title).to.eql('my cool title');
       done();
     });
   });
+
+  before(function() {
+    for (var i = 0; i < 201; i++) {
+      mongoose.connection.collections.stories.insert({
+        userId: '546d3092ad2269026e83de6c',
+        title: i,
+        storyBody: 'a story',
+        lat: 47,
+        lng: -122
+      }, function(err) {
+        if (err) return err;
+      });
+    }
+  });
+
+  it('should return a count instead of an array of stories', function(done) {
+    chai.request(url)
+    .get('/api/stories/location')
+    .set('latMin', 46)
+    .set('latMax', 48)
+    .set('lngMin', -123)
+    .set('lngMax', -121)
+    .end(function(err, res) {
+      expect(err).to.be.null;
+      expect(res.body).to.have.property('storyCount')
+        .that.eql(201);
+      done();
+    });
+  });
+
 });

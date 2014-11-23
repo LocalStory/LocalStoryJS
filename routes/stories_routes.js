@@ -80,7 +80,7 @@ module.exports = function(app, appSecret, mongoose) {
 
   //get all stories within certain radius of given lat/lng
   app.get('/api/stories/location', function(req, res) {
-    //query number 1 - checks for count < 200
+    //check for count < 200
     Story.where({
       lat: {$gte: parseFloat(req.headers.latmin), $lte: parseFloat(req.headers.latmax)},
       lng: {$gte: parseFloat(req.headers.lngmin), $lte: parseFloat(req.headers.lngmax)}
